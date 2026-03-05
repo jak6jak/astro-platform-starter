@@ -27,61 +27,92 @@ for (const blob of blobs) {
 const totalVotes = counts.reduce((sum, c) => sum + c, 0);
 const tallies: VoteTally[] = decision.options.map((option, i) => ({ option, count: counts[i] }));
 const winner = totalVotes > 0 ? tallies.reduce((best, t) => (t.count > best.count ? t : best), tallies[0]) : null;
+const voteUrl = new URL(`/decisions/${id}/vote`, Astro.request.url).href;
 ---
 
 <Layout title={`Results — ${decision.question} — Concord`}>
     <div class="py-12">
         <div class="mx-auto max-w-xl">
-            <p class="mb-2 text-sm font-medium uppercase tracking-widest text-white/50">Results</p>
-            <h1 class="mb-2 text-3xl font-bold">{decision.question}</h1>
-            <p class="mb-8 text-white/60">{totalVotes} {totalVotes === 1 ? 'vote' : 'votes'} cast</p>
 
-            <div class="mb-6 flex flex-col gap-4">
-                {tallies.map((tally) => {
-                    const pct = totalVotes > 0 ? Math.round((tally.count / totalVotes) * 100) : 0;
-                    const isWinner = winner?.option === tally.option;
-                    return (
-                        <div class={`rounded-2xl p-6 shadow-lg ${isWinner ? 'bg-[--color-primary] text-white' : 'bg-white text-gray-900'}`}>
-                            <div class="mb-3 flex items-center justify-between gap-2">
-                                <span class={`font-semibold ${isWinner ? 'text-white' : 'text-gray-800'}`}>
-                                    {tally.option}
-                                </span>
-                                <div class="flex items-center gap-2 shrink-0">
-                                    {isWinner && totalVotes > 0 && (
-                                        <span class="rounded-full bg-white/20 px-2 py-0.5 text-xs font-bold uppercase tracking-wide">
-                                            Winner
-                                        </span>
-                                    )}
-                                    <span class={`text-sm font-medium ${isWinner ? 'text-white/80' : 'text-gray-500'}`}>
-                                        {tally.count} {tally.count === 1 ? 'vote' : 'votes'} · {pct}%
-                                    </span>
-                                </div>
-                            </div>
-                            <div class={`h-2.5 w-full overflow-hidden rounded-full ${isWinner ? 'bg-white/30' : 'bg-gray-100'}`}>
-                                <div
-                                    class={`h-full rounded-full transition-all ${isWinner ? 'bg-white' : 'bg-[--color-primary]'}`}
-                                    style={`width: ${pct}%`}
-                                ></div>
-                            </div>
-                        </div>
-                    );
-                })}
+            <!-- Share link — prominent at the top so creators can immediately share -->
+            <div class="mb-8 rounded-2xl border border-white/15 bg-white/8 p-5">
+                <p class="mb-1 text-sm font-semibold text-white">Share this poll</p>
+                <p class="mb-3 text-xs text-white/50">Send this link to participants — no account needed to vote.</p>
+                <div class="flex items-center gap-2 rounded-lg border border-white/15 bg-black/20 px-3 py-2">
+                    <span id="vote-url" class="flex-1 truncate text-sm text-white/70">{voteUrl}</span>
+                    <button
+                        id="copy-btn"
+                        type="button"
+                        class="shrink-0 rounded-md bg-[--color-primary] px-3 py-1.5 text-xs font-semibold text-white hover:opacity-90 transition-opacity"
+                        data-url={voteUrl}
+                    >
+                        Copy link
+                    </button>
+                </div>
             </div>
 
-            {totalVotes === 0 && (
-                <p class="mb-6 rounded-2xl bg-white/10 px-6 py-5 text-center text-white/60">
-                    No votes have been cast yet.
-                </p>
+            <!-- Question + vote count -->
+            <p class="mb-1 text-sm font-medium uppercase tracking-widest text-white/40">Results</p>
+            <h1 class="mb-2 text-3xl font-bold">{decision.question}</h1>
+            <p class="mb-8 text-white/50 text-sm">{totalVotes} {totalVotes === 1 ? 'vote' : 'votes'} · updates when you refresh</p>
+
+            <!-- Tallies -->
+            {totalVotes === 0 ? (
+                <div class="mb-8 rounded-2xl border border-white/10 bg-white/5 px-6 py-10 text-center">
+                    <p class="text-white/50">No votes yet. Share the link above to get started.</p>
+                </div>
+            ) : (
+                <div class="mb-8 flex flex-col gap-3">
+                    {tallies.map((tally) => {
+                        const pct = totalVotes > 0 ? Math.round((tally.count / totalVotes) * 100) : 0;
+                        const isWinner = winner?.option === tally.option;
+                        return (
+                            <div class={`rounded-xl p-5 ${isWinner ? 'bg-[--color-primary]' : 'bg-white'}`}>
+                                <div class="mb-2.5 flex items-center justify-between gap-2">
+                                    <span class={`font-semibold ${isWinner ? 'text-white' : 'text-gray-800'}`}>
+                                        {tally.option}
+                                    </span>
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        {isWinner && (
+                                            <span class="rounded-full bg-white/25 px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-white">
+                                                Winner
+                                            </span>
+                                        )}
+                                        <span class={`text-sm tabular-nums ${isWinner ? 'text-white/75' : 'text-gray-400'}`}>
+                                            {tally.count} {tally.count === 1 ? 'vote' : 'votes'} · {pct}%
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class={`h-2 w-full overflow-hidden rounded-full ${isWinner ? 'bg-white/25' : 'bg-gray-100'}`}>
+                                    <div
+                                        class={`h-full rounded-full ${isWinner ? 'bg-white' : 'bg-[--color-primary]'}`}
+                                        style={`width: ${pct}%`}
+                                    ></div>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
             )}
 
-            <div class="flex gap-3">
-                <a href={`/decisions/${id}/vote`} class="btn border border-white/30 bg-transparent hover:bg-white/10">
-                    Vote
-                </a>
-                <a href={`/decisions/${id}`} class="btn border border-white/30 bg-transparent hover:bg-white/10">
-                    Back to decision
+            <!-- Actions -->
+            <div class="flex items-center gap-3">
+                <a href={`/decisions/${id}/vote`} class="btn">Cast your vote</a>
+                <a href="/decisions/new" class="text-sm text-white/50 hover:text-white transition-colors no-underline">
+                    Start a new decision →
                 </a>
             </div>
         </div>
     </div>
 </Layout>
+
+<script>
+    const btn = document.getElementById('copy-btn') as HTMLButtonElement;
+    btn?.addEventListener('click', async () => {
+        const url = btn.dataset.url ?? '';
+        await navigator.clipboard.writeText(url);
+        const original = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = original; }, 2000);
+    });
+</script>

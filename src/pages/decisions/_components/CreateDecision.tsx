@@ -44,7 +44,7 @@ export default function CreateDecision() {
                 setError(data.error ?? 'Something went wrong.');
                 return;
             }
-            window.location.href = `/decisions/${data.id}`;
+            window.location.href = `/decisions/${data.id}/results`;
         } catch {
             setError('Network error. Please try again.');
         } finally {
@@ -107,7 +107,7 @@ export default function CreateDecision() {
 
             {error && <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">{error}</p>}
 
-            <button type="submit" disabled={submitting} className="btn btn-primary self-start">
+            <button type="submit" disabled={submitting} className="btn w-full justify-center">
                 {submitting ? 'Creating…' : 'Create Decision'}
             </button>
         </form>

@@ -17,13 +17,13 @@ if (!decision) {
 <Layout title={`Vote — ${decision.question} — Concord`}>
     <div class="py-12">
         <div class="mx-auto max-w-xl">
-            <p class="mb-2 text-sm font-medium uppercase tracking-widest text-white/50">Cast your vote</p>
-            <h1 class="mb-8 text-3xl font-bold">{decision.question}</h1>
+            <p class="mb-2 text-sm font-medium uppercase tracking-widest text-white/40">Cast your vote</p>
+            <h1 class="mb-6 text-3xl font-bold">{decision.question}</h1>
             <div class="rounded-2xl bg-white p-8 text-gray-900 shadow-lg">
                 <VoteForm client:load decision={decision} />
             </div>
-            <p class="mt-4 text-center text-sm text-white/40">
-                You can only vote once per device on this decision.
+            <p class="mt-4 text-center text-sm text-white/50">
+                One vote per device. Results update in real time.
             </p>
         </div>
     </div>

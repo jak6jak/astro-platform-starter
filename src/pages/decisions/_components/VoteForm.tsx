@@ -62,7 +62,7 @@ export default function VoteForm({ decision }: Props) {
             <div className="text-center">
                 <p className="mb-2 text-lg font-semibold text-gray-700">You've already voted.</p>
                 <p className="mb-6 text-gray-500">Each device can only vote once per decision.</p>
-                <a href={`/decisions/${decision.id}/results`} className="btn btn-primary">
+                <a href={`/decisions/${decision.id}/results`} className="btn">
                     View results
                 </a>
             </div>
@@ -99,7 +99,7 @@ export default function VoteForm({ decision }: Props) {
 
             {error && <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">{error}</p>}
 
-            <button type="submit" disabled={submitting || selected === null} className="btn btn-primary self-start disabled:opacity-50">
+            <button type="submit" disabled={submitting || selected === null} className="btn w-full justify-center disabled:opacity-50">
                 {submitting ? 'Submitting…' : 'Submit vote'}
             </button>
         </form>
