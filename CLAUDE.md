@@ -2,13 +2,48 @@
 
 This file provides guidance for AI assistants working in this codebase.
 
+## Product Vision
+
+This project is evolving into a **group decision-making platform** — a web app that helps teams, communities, and groups reach collective decisions efficiently and fairly.
+
+### Core Purpose
+
+Users come to the platform when a group needs to make a decision together. The platform provides multiple decision-making mechanisms, from simple polls to more rigorous scientific methods, so groups can choose the approach best suited to their situation.
+
+### Decision-Making Methods to Support
+
+- **Polls** — simple majority/plurality voting on options
+- **Ranked-choice voting** — voters rank options; winners determined by instant-runoff or Borda count
+- **Approval voting** — voters approve any number of options; most approved wins
+- **Weighted voting** — participants assigned different vote weights (e.g. by stake or expertise)
+- **Consensus / Delphi method** — iterative rounds where participants refine estimates until convergence
+- **Quadratic voting** — participants distribute a budget of vote credits across options
+- **Priority matrix** — pairwise comparisons to rank options by impact vs. effort
+
+### Key User Flows
+
+1. **Create a decision** — set a question, choose a method, define options, set a deadline
+2. **Invite participants** — share a link; participants join without requiring an account (or with one)
+3. **Vote / respond** — UI adapts to the selected method
+4. **View results** — real-time results with visualizations; method-appropriate outcome calculation
+5. **Archive** — past decisions stored and browsable
+
+### Design Principles
+
+- **Method transparency** — explain each voting method clearly so users understand what they're choosing and why it matters
+- **Accessibility first** — decisions should be easy to participate in on any device
+- **No dark patterns** — results are shown honestly; no nudging toward any outcome
+- **Stateless participation** — participants should be able to vote via a shared link without friction
+
+---
+
 ## Project Overview
 
-**astro-platform-starter** is an Astro.js starter template that demonstrates key [Netlify platform primitives](https://docs.netlify.com/platform/primitives/): Edge Functions, Image CDN, Blob Storage, and Cache Revalidation.
+**astro-platform-starter** is the technical foundation for the group decision-making platform, built on Astro.js and deployed on Netlify.
 
 - **Framework:** Astro 5 + React 18 + Tailwind CSS 4 + TypeScript
 - **Adapter:** `@astrojs/netlify` (SSR via Netlify Functions)
-- **Live demo:** https://astro-platform-starter.netlify.app/
+- **Storage:** Netlify Blobs (decisions, votes, participant data)
 
 ---
 
