@@ -1,0 +1,17 @@
+---
+export const prerender = false;
+import Layout from '../../layouts/Layout.astro';
+import CreateDecision from './_components/CreateDecision';
+---
+
+<Layout title="New Decision — Concord">
+    <div class="py-12">
+        <div class="mx-auto max-w-xl">
+            <h1 class="mb-2 text-3xl font-bold">New Decision</h1>
+            <p class="mb-8 text-white/70">Enter a question and the options participants can vote on.</p>
+            <div class="rounded-2xl bg-white p-8 text-gray-900 shadow-lg">
+                <CreateDecision client:load />
+            </div>
+        </div>
+    </div>
+</Layout>

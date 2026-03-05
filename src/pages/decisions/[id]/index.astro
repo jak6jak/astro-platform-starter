@@ -1,0 +1,73 @@
+---
+export const prerender = false;
+import { getStore } from '@netlify/blobs';
+import Layout from '../../../layouts/Layout.astro';
+import type { Decision } from '../../../types';
+
+const { id } = Astro.params;
+const store = getStore({ name: 'decisions', consistency: 'strong' });
+const decision: Decision | null = await store.get(id!, { type: 'json' });
+
+if (!decision) {
+    return new Response(null, { status: 404 });
+}
+
+const voteUrl = new URL(`/decisions/${id}/vote`, Astro.request.url).href;
+---
+
+<Layout title={`${decision.question} — Concord`}>
+    <div class="py-12">
+        <div class="mx-auto max-w-xl">
+            <p class="mb-2 text-sm font-medium uppercase tracking-widest text-white/50">Decision</p>
+            <h1 class="mb-8 text-3xl font-bold">{decision.question}</h1>
+
+            <div class="mb-6 rounded-2xl bg-white p-6 text-gray-900 shadow-lg">
+                <p class="mb-3 text-sm font-semibold text-gray-500 uppercase tracking-wide">Options</p>
+                <ul class="flex flex-col gap-2">
+                    {decision.options.map((option) => (
+                        <li class="flex items-center gap-3 rounded-lg border border-gray-100 px-4 py-3 text-base font-medium">
+                            <span class="h-2 w-2 rounded-full bg-[--color-primary]"></span>
+                            {option}
+                        </li>
+                    ))}
+                </ul>
+            </div>
+
+            <div class="mb-6 rounded-2xl bg-white p-6 text-gray-900 shadow-lg">
+                <p class="mb-2 text-sm font-semibold text-gray-500 uppercase tracking-wide">Share voting link</p>
+                <p class="mb-3 text-xs text-gray-400">Send this link to participants so they can cast their vote.</p>
+                <div class="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2">
+                    <span class="flex-1 truncate text-sm text-gray-700">{voteUrl}</span>
+                    <button
+                        id="copy-btn"
+                        type="button"
+                        class="shrink-0 rounded-md bg-[--color-primary] px-3 py-1 text-xs font-semibold text-white hover:opacity-90"
+                        data-url={voteUrl}
+                    >
+                        Copy
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <a href={`/decisions/${id}/vote`} class="btn btn-primary">Cast your vote</a>
+                <a href={`/decisions/${id}/results`} class="btn border border-white/30 bg-transparent hover:bg-white/10">
+                    View results
+                </a>
+            </div>
+        </div>
+    </div>
+</Layout>
+
+<script>
+    const btn = document.getElementById('copy-btn') as HTMLButtonElement;
+    btn?.addEventListener('click', async () => {
+        const url = btn.dataset.url ?? '';
+        await navigator.clipboard.writeText(url);
+        const original = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => {
+            btn.textContent = original;
+        }, 2000);
+    });
+</script>

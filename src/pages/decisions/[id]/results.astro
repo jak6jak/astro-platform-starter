@@ -1,0 +1,87 @@
+---
+export const prerender = false;
+import { getStore } from '@netlify/blobs';
+import Layout from '../../../layouts/Layout.astro';
+import type { Decision, Vote, VoteTally } from '../../../types';
+
+const { id } = Astro.params;
+
+const decisionStore = getStore({ name: 'decisions', consistency: 'strong' });
+const decision: Decision | null = await decisionStore.get(id!, { type: 'json' });
+
+if (!decision) {
+    return new Response(null, { status: 404 });
+}
+
+const counts = new Array<number>(decision.options.length).fill(0);
+const voteStore = getStore({ name: `votes-${id}`, consistency: 'strong' });
+const { blobs } = await voteStore.list();
+
+for (const blob of blobs) {
+    const vote: Vote | null = await voteStore.get(blob.key, { type: 'json' });
+    if (vote && vote.optionIndex >= 0 && vote.optionIndex < counts.length) {
+        counts[vote.optionIndex]++;
+    }
+}
+
+const totalVotes = counts.reduce((sum, c) => sum + c, 0);
+const tallies: VoteTally[] = decision.options.map((option, i) => ({ option, count: counts[i] }));
+const winner = totalVotes > 0 ? tallies.reduce((best, t) => (t.count > best.count ? t : best), tallies[0]) : null;
+---
+
+<Layout title={`Results — ${decision.question} — Concord`}>
+    <div class="py-12">
+        <div class="mx-auto max-w-xl">
+            <p class="mb-2 text-sm font-medium uppercase tracking-widest text-white/50">Results</p>
+            <h1 class="mb-2 text-3xl font-bold">{decision.question}</h1>
+            <p class="mb-8 text-white/60">{totalVotes} {totalVotes === 1 ? 'vote' : 'votes'} cast</p>
+
+            <div class="mb-6 flex flex-col gap-4">
+                {tallies.map((tally) => {
+                    const pct = totalVotes > 0 ? Math.round((tally.count / totalVotes) * 100) : 0;
+                    const isWinner = winner?.option === tally.option;
+                    return (
+                        <div class={`rounded-2xl p-6 shadow-lg ${isWinner ? 'bg-[--color-primary] text-white' : 'bg-white text-gray-900'}`}>
+                            <div class="mb-3 flex items-center justify-between gap-2">
+                                <span class={`font-semibold ${isWinner ? 'text-white' : 'text-gray-800'}`}>
+                                    {tally.option}
+                                </span>
+                                <div class="flex items-center gap-2 shrink-0">
+                                    {isWinner && totalVotes > 0 && (
+                                        <span class="rounded-full bg-white/20 px-2 py-0.5 text-xs font-bold uppercase tracking-wide">
+                                            Winner
+                                        </span>
+                                    )}
+                                    <span class={`text-sm font-medium ${isWinner ? 'text-white/80' : 'text-gray-500'}`}>
+                                        {tally.count} {tally.count === 1 ? 'vote' : 'votes'} · {pct}%
+                                    </span>
+                                </div>
+                            </div>
+                            <div class={`h-2.5 w-full overflow-hidden rounded-full ${isWinner ? 'bg-white/30' : 'bg-gray-100'}`}>
+                                <div
+                                    class={`h-full rounded-full transition-all ${isWinner ? 'bg-white' : 'bg-[--color-primary]'}`}
+                                    style={`width: ${pct}%`}
+                                ></div>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+
+            {totalVotes === 0 && (
+                <p class="mb-6 rounded-2xl bg-white/10 px-6 py-5 text-center text-white/60">
+                    No votes have been cast yet.
+                </p>
+            )}
+
+            <div class="flex gap-3">
+                <a href={`/decisions/${id}/vote`} class="btn border border-white/30 bg-transparent hover:bg-white/10">
+                    Vote
+                </a>
+                <a href={`/decisions/${id}`} class="btn border border-white/30 bg-transparent hover:bg-white/10">
+                    Back to decision
+                </a>
+            </div>
+        </div>
+    </div>
+</Layout>

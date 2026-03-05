@@ -1,21 +1,133 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import ContextAlert from '../components/ContextAlert.astro';
-import Markdown from '../components/Markdown.astro';
 
-const explainer = `
-An Astro website can go way beyond static pages - on the right platform.
+const methods = [
+    {
+        name: 'Polls',
+        description: 'Simple majority voting on a set of options. Fast and familiar.',
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`
+    },
+    {
+        name: 'Ranked Choice',
+        description: 'Rank options in order of preference. Avoids split votes and finds true consensus.',
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M3 12h12M3 17h6" /></svg>`
+    },
+    {
+        name: 'Approval Voting',
+        description: 'Approve as many options as you like. The most broadly accepted option wins.',
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>`
+    },
+    {
+        name: 'Quadratic Voting',
+        description: 'Distribute vote credits across options. Express intensity of preference, not just direction.',
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>`
+    },
+    {
+        name: 'Delphi Method',
+        description: 'Iterative rounds of voting with feedback. Estimates converge toward expert consensus.',
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>`
+    },
+    {
+        name: 'Priority Matrix',
+        description: 'Pairwise comparisons to rank options by importance. Rigorous and bias-resistant.',
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>`
+    }
+];
 
-Netlify supports not only [Streaming SSR](https://docs.astro.build/en/guides/server-side-rendering/#html-streaming) and fast [Edge Middleware](https://docs.astro.build/en/guides/middleware/), but also [on-demand revalidation](https://www.netlify.com/blog/cache-tags-and-purge-api-on-netlify/) and [stale-while-revalidate](https://www.netlify.com/blog/swr-and-fine-grained-cache-control/). 
-Any page or data can be rebuilt only when needed, without site visitors ever getting a performance hit.
-`;
+const steps = [
+    {
+        number: '01',
+        title: 'Create a decision',
+        description: 'Write your question, pick a voting method, define the options, and set a deadline.'
+    },
+    {
+        number: '02',
+        title: 'Invite your group',
+        description: 'Share a link. Participants can vote instantly — no account required.'
+    },
+    {
+        number: '03',
+        title: 'See the result',
+        description: 'Watch votes come in live. Results are calculated transparently using the method you chose.'
+    }
+];
 ---
 
-<Layout title="Welcome to Astro.">
-    <ContextAlert class="mb-8" />
-    <h1 class="mb-10">Netlify Platform Starter for Astro</h1>
-    <Markdown content={explainer} class="mb-10 text-lg" />
-    <p>
-        <a href="https://docs.netlify.com/frameworks/astro/" class="btn btn-lg sm:min-w-64">Read the Docs</a>
-    </p>
+<Layout title="Concord — Better group decisions">
+    <!-- Hero -->
+    <section class="py-16 sm:py-24">
+        <div class="max-w-3xl">
+            <p class="mb-4 text-sm font-semibold tracking-widest uppercase text-primary">Group Decision Making</p>
+            <h1 class="mb-6 leading-tight">
+                Reach decisions your whole group can stand behind.
+            </h1>
+            <p class="mb-10 text-xl leading-relaxed text-white/75">
+                Concord gives teams, communities, and groups the tools to make fair, transparent collective decisions —
+                from quick polls to rigorous scientific methods.
+            </p>
+            <div class="flex flex-wrap gap-4">
+                <a href="/decisions/new" class="btn btn-lg">Start a Decision</a>
+                <a href="#how-it-works" class="btn btn-lg bg-white/10 text-white hover:bg-white/20">
+                    How it works
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Divider -->
+    <hr class="border-white/10" />
+
+    <!-- Methods -->
+    <section id="methods" class="py-16 sm:py-24">
+        <div class="mb-12">
+            <h2 class="mb-3">Choose your method</h2>
+            <p class="text-lg text-white/65">
+                Different decisions call for different approaches. Pick the method that fits.
+            </p>
+        </div>
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {methods.map((method) => (
+                <div class="flex flex-col gap-3 p-6 rounded-lg bg-white/8 border border-white/10 hover:bg-white/12 transition-colors">
+                    <div class="text-primary" set:html={method.icon} />
+                    <h3 class="text-lg font-semibold">{method.name}</h3>
+                    <p class="text-sm leading-relaxed text-white/65">{method.description}</p>
+                </div>
+            ))}
+        </div>
+    </section>
+
+    <!-- Divider -->
+    <hr class="border-white/10" />
+
+    <!-- How it works -->
+    <section id="how-it-works" class="py-16 sm:py-24">
+        <div class="mb-12">
+            <h2 class="mb-3">How it works</h2>
+            <p class="text-lg text-white/65">Up and running in under a minute.</p>
+        </div>
+        <div class="grid gap-8 sm:grid-cols-3">
+            {steps.map((step) => (
+                <div class="flex flex-col gap-4">
+                    <span class="text-4xl font-bold text-primary/40">{step.number}</span>
+                    <h3 class="text-xl font-semibold">{step.title}</h3>
+                    <p class="text-white/65 leading-relaxed">{step.description}</p>
+                </div>
+            ))}
+        </div>
+    </section>
+
+    <!-- Divider -->
+    <hr class="border-white/10" />
+
+    <!-- CTA -->
+    <section class="py-16 sm:py-24 text-center">
+        <h2 class="mb-4">Ready to decide?</h2>
+        <p class="mb-8 text-lg text-white/65 max-w-xl mx-auto">
+            Start your first decision in seconds. No sign-up needed for participants.
+        </p>
+        <a href="/decisions/new" class="btn btn-lg">Create a Decision</a>
+    </section>
 </Layout>

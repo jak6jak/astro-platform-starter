@@ -1,0 +1,30 @@
+---
+export const prerender = false;
+import { getStore } from '@netlify/blobs';
+import Layout from '../../../layouts/Layout.astro';
+import VoteForm from '../_components/VoteForm';
+import type { Decision } from '../../../types';
+
+const { id } = Astro.params;
+const store = getStore({ name: 'decisions', consistency: 'strong' });
+const decision: Decision | null = await store.get(id!, { type: 'json' });
+
+if (!decision) {
+    return new Response(null, { status: 404 });
+}
+---
+
+<Layout title={`Vote — ${decision.question} — Concord`}>
+    <div class="py-12">
+        <div class="mx-auto max-w-xl">
+            <p class="mb-2 text-sm font-medium uppercase tracking-widest text-white/50">Cast your vote</p>
+            <h1 class="mb-8 text-3xl font-bold">{decision.question}</h1>
+            <div class="rounded-2xl bg-white p-8 text-gray-900 shadow-lg">
+                <VoteForm client:load decision={decision} />
+            </div>
+            <p class="mt-4 text-center text-sm text-white/40">
+                You can only vote once per device on this decision.
+            </p>
+        </div>
+    </div>
+</Layout>
